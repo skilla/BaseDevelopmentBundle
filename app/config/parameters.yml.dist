@@ -1,0 +1,2 @@
+parameters:
+    secret: "this is the kernel secret for symfony/framework."

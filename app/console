@@ -1,0 +1,17 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Skilla <sergio.zambrano@gmail.com>
+ * Date: 8/10/16
+ * Time: 20:05
+ */
+set_time_limit(0);
+
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use \Symfony\Bundle\FrameworkBundle\Console\Application;
+
+$kernel = new AppKernel('dev', true);
+$application = new Application($kernel);
+$application->run();
