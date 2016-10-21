@@ -6,23 +6,25 @@
 
     CheckBundleName($name) || die(2);
 
-    //ReplaceAppConfig($name);
+    ReplaceAppConfig($name);
 
-    //ReplaceAppKernel($name);
+    ReplaceAppKernel($name);
 
-    //ReplaceConfiguration($name);
+    ReplaceConfiguration($name);
 
-    //ReplaceExtension($name);
+    ReplaceExtension($name);
 
-    //RenameExtension($name);
+    RenameExtension($name);
 
-    //ReplaceBundle($name);
+    ReplaceBundle($name);
 
-    //RenameBundle($name);
+    RenameBundle($name);
 
-    //ReplaceComposer($name);
+    ReplaceComposer($name);
 
-    //UpdateComposer() || die(3);
+    UpdateComposer() || die(3);
+
+    DeleteOriginalRepository();
 
     Remember();
 
@@ -169,6 +171,20 @@
         return true;
     }
 
+    function DeleteOriginalRepository() {
+        if (!is_dir('.git')) {
+            return false;
+        }
+        if (!is_readable('.git/config')) {
+            return false;
+        }
+        $content = file_get_contents('.git/config');
+        if (preg_match('~https://github.com/skilla/BaseDevelopmentBundle.git~', $content) < 1) {
+            return false;
+        }
+        delTree('.git');
+    }
+
     function Remember() {
         $color = "\e[1m\e[1;37m\e[1;44m\n\n";
         $reset = "\n\e[0m\n";
@@ -177,4 +193,12 @@
         echo "\n";
         echo " Goog luck with the bundle\n";
         echo $reset;
+    }
+
+    function delTree($dirname) {
+        $files = array_diff(scandir($dirname), array('.','..'));
+        foreach ($files as $file) {
+            (is_dir("$dirname/$file")) ? delTree("$dirname/$file") : unlink("$dirname/$file");
+        }
+        return rmdir($dirname);
     }
