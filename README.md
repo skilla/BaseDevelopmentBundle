@@ -10,9 +10,10 @@ This repository provides you with the basic structure to begin programming witho
 
 Once cloned just run a script that will update the namespaces, the names of classes and configuration files to suit your "user / bundle".
 
-As use in 4 steps:
+As use in 5 steps:
 - Clone this repository
 - Run the script changeBundleName.php to adapt the bundle to its "user / nombre_de_bundle"
+- Run "composer install"
 - Upload the bundle to your repository
 - Start programming your project
 
@@ -24,9 +25,10 @@ Este repositorio le provee de la estructura básica para empezar a programar sin
 
 Una vez clonado solo hay que ejecutar un script que actualizará los namespaces, los nombres de las clases y los ficheros de configuración para adaptarlos a su "user/bundle".
 
-Como usarlo en 4 pasos:
+Como usarlo en 5 pasos:
 - Clonar este repositorio
 - Ejecutar el script changeBundleName.php para adaptár el bundle a su "usuario/nombre_de_bundle"
+- Ejecutar "composer install"
 - Subir el bundle a su repositorio
 - Iniciar la programación de su proyecto
 
