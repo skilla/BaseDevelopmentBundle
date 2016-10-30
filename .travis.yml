@@ -10,5 +10,5 @@ php:
 install:
     - composer install
 
-script: bin/phpunit -c app/
+script: bin/phpunit -c app/phpunit.xml
 
