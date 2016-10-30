@@ -2,6 +2,14 @@
 
 __Skeleton bundle for the development and testing of new bundles for Symfony__
 
+[__Status__]
+
+[![Latest Stable Version](https://poser.pugx.org/skilla/base-development-bundle/v/stable)](https://packagist.org/packages/skilla/base-development-bundle)
+[![Build Status](https://travis-ci.org/skilla/BaseDevelopmentBundle.svg?branch=master)](https://travis-ci.org/skilla/BaseDevelopmentBundle)
+[![Total Downloads](https://poser.pugx.org/skilla/base-development-bundle/downloads)](https://packagist.org/packages/skilla/base-development-bundle)
+[![License](https://poser.pugx.org/skilla/base-development-bundle/license)](https://packagist.org/packages/skilla/base-development-bundle)
+[![composer.lock](https://poser.pugx.org/skilla/base-development-bundle/composerlock)](https://packagist.org/packages/skilla/base-development-bundle)
+
 [__English__]
 
 If you plan to create a bundle for Symfony 2 or 3, this can be a good way to start.
