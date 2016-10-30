@@ -8,7 +8,7 @@ php:
     - nightly
 
 install:
-    - composer install
+    - composer require "phpunit/phpunit:~4.8.26"
 
 script: bin/phpunit -c app/phpunit.xml
 
