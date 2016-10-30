@@ -10,12 +10,12 @@ namespace Skilla\BaseDevelopmentBundle\Tests\DependencyInjection;
 
 
 use \Skilla\BaseDevelopmentBundle\DependencyInjection\SkillaBaseDevelopmentExtension;
-use \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
+use Skilla\BaseDevelopmentBundle\SkillaBaseDevelopmentBundle;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use \Symfony\Component\DependencyInjection\ContainerBuilder;
-use \Symfony\Component\DependencyInjection\Exception\ParameterNotFoundException;
 use \Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 
-class EixComercialPersistCacheExtensionTest extends \PHPUnit_Framework_TestCase
+class SkillaBaseDevelopmentExtensionTest extends KernelTestCase
 {
     public function testInstantiation()
     {
@@ -25,7 +25,7 @@ class EixComercialPersistCacheExtensionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Symfony\Component\DependencyInjection\Exception\ParameterNotFoundException
+     * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
      */
     public function testLoadWhitNoKernelParameter()
     {
@@ -54,7 +54,10 @@ class EixComercialPersistCacheExtensionTest extends \PHPUnit_Framework_TestCase
         $sut->load($configs, $containerBuilder);
     }
 
-    public function testLoad()
+    /**
+     * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
+     */
+    public function testLoadWithInvalidParameter()
     {
         $parameters = [
             'kernel.root_dir' => realpath(__DIR__.'/app/'),
@@ -62,13 +65,35 @@ class EixComercialPersistCacheExtensionTest extends \PHPUnit_Framework_TestCase
         ];
         $parameterBag = new ParameterBag($parameters);
         $containerBuilder = new ContainerBuilder($parameterBag);
-        $actual = new SkillaBaseDevelopmentExtension();
+        $sut = new SkillaBaseDevelopmentExtension();
 
         $configs = [
             [
                 'type' => null,
             ]
         ];
-        $actual->load($configs, $containerBuilder);
+        $sut->load($configs, $containerBuilder);
+    }
+
+    public function testLoad()
+    {
+        self::bootKernel();
+
+        $parameters = [
+            'kernel.root_dir' => static::$kernel->getRootDir(),
+            'kernel.debug' => static::$kernel->isDebug(),
+        ];
+        $parameterBag = new ParameterBag($parameters);
+        $containerBuilder = new ContainerBuilder($parameterBag);
+        $sut = new SkillaBaseDevelopmentExtension();
+
+        $configs = [
+            [
+                'key' => 'value',
+            ]
+        ];
+        $sut->load($configs, $containerBuilder);
+        $this->assertEquals('skilla_base_development', $sut->getAlias());
+        parent::tearDown();
     }
 }

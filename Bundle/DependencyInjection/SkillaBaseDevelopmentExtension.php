@@ -27,16 +27,7 @@ class SkillaBaseDevelopmentExtension extends Extension
         $loader = new YamlFileLoader($container, new FileLocator($configDir));
         $loader->load($configFile);
 
-        if (count($configs[0])===0) {
-            $exception = new InvalidConfigurationException();
-            $exception->addHint(
-                sprintf(
-                    'Add configuration for "%s" in %s/config/config.yml',
-                    $this->getAlias(),
-                    $container->getParameter('kernel.root_dir')
-                )
-            );
-            throw $exception;
-        }
+        $configuration = $this->getConfiguration($configs, $container);
+        $config = $this->processConfiguration($configuration, $configs);
     }
 }
