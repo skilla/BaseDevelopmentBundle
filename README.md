@@ -4,7 +4,7 @@ __Skeleton bundle for the development and testing of new bundles for Symfony__
 
 [__Status__]
 
-[![Latest Stable Version](https://poser.pugx.org/skilla/base-development-bundle/version)](https://packagist.org/packages/skilla/base-development-bundle)
+[![Latest Stable Version](https://img.shields.io/github/release/skilla/BaseDevelopmentBundle.svg)](https://packagist.org/packages/skilla/base-development-bundle#1.0.0)
 [![Build Status](https://travis-ci.org/skilla/BaseDevelopmentBundle.svg?branch=master)](https://travis-ci.org/skilla/BaseDevelopmentBundle)
 [![Total Downloads](https://poser.pugx.org/skilla/base-development-bundle/downloads)](https://packagist.org/packages/skilla/base-development-bundle)
 [![Latest Unstable Version](https://poser.pugx.org/skilla/base-development-bundle/v/unstable)](https://packagist.org/packages/skilla/base-development-bundle#dev-master)
