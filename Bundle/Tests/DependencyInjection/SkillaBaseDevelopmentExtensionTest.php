@@ -29,12 +29,12 @@ class SkillaBaseDevelopmentExtensionTest extends KernelTestCase
      */
     public function testLoadWhitNoKernelParameter()
     {
-        $parameters = [];
+        $parameters = array();
         $parameterBag = new ParameterBag($parameters);
         $containerBuilder = new ContainerBuilder($parameterBag);
         $sut = new SkillaBaseDevelopmentExtension();
 
-        $sut->load([[]], $containerBuilder);
+        $sut->load(array(array()), $containerBuilder);
     }
 
     /**
@@ -42,15 +42,15 @@ class SkillaBaseDevelopmentExtensionTest extends KernelTestCase
      */
     public function testLoadWhitNoBundleParameter()
     {
-        $parameters = [
+        $parameters = array(
             'kernel.root_dir' => realpath(__DIR__.'/app/'),
             'kernel.debug' => false,
-        ];
+        );
         $parameterBag = new ParameterBag($parameters);
         $containerBuilder = new ContainerBuilder($parameterBag);
         $sut = new SkillaBaseDevelopmentExtension();
 
-        $configs = [[]];
+        $configs = array(array());
         $sut->load($configs, $containerBuilder);
     }
 
@@ -59,19 +59,19 @@ class SkillaBaseDevelopmentExtensionTest extends KernelTestCase
      */
     public function testLoadWithInvalidParameter()
     {
-        $parameters = [
+        $parameters = array(
             'kernel.root_dir' => realpath(__DIR__.'/app/'),
             'kernel.debug' => false,
-        ];
+        );
         $parameterBag = new ParameterBag($parameters);
         $containerBuilder = new ContainerBuilder($parameterBag);
         $sut = new SkillaBaseDevelopmentExtension();
 
-        $configs = [
-            [
+        $configs = array(
+            array(
                 'type' => null,
-            ]
-        ];
+            )
+        );
         $sut->load($configs, $containerBuilder);
     }
 
@@ -79,19 +79,19 @@ class SkillaBaseDevelopmentExtensionTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $parameters = [
+        $parameters = array(
             'kernel.root_dir' => static::$kernel->getRootDir(),
             'kernel.debug' => static::$kernel->isDebug(),
-        ];
+        );
         $parameterBag = new ParameterBag($parameters);
         $containerBuilder = new ContainerBuilder($parameterBag);
         $sut = new SkillaBaseDevelopmentExtension();
 
-        $configs = [
-            [
+        $configs = array(
+            array(
                 'key' => 'value',
-            ]
-        ];
+            )
+        );
         $sut->load($configs, $containerBuilder);
         $this->assertEquals('skilla_base_development', $sut->getAlias());
         parent::tearDown();
