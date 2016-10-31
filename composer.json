@@ -25,7 +25,7 @@
         }
     },
     "require": {
-        "php": ">=5.6"
+        "php": ">=5.5.9"
     },
     "require-dev": {
         "symfony/http-kernel": "~2.8.12 || ~3.1.0",
