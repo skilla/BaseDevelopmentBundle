@@ -5,8 +5,8 @@ namespace Installation;
 
 class Screen
 {
-    const COLOR = "\e[1m\e[1;37m\e[1;44m\n\n";
-    const RESET = "\n\e[0m\n";
+    const COLOR = "\e[1m\e[1;37m\e[1;44m";
+    const RESET = "\e[0m\n";
 
     private static $isStarted = false;
 
