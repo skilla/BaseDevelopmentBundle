@@ -1,58 +1,98 @@
 #!/usr/bin/env php
 <?php
-    CheckNumberArguments($argv) || die(1);
 
-    $name = $argv[1];
+namespace Installation;
 
-    CheckBundleName($name) || die(2);
+class Screen
+{
+    const COLOR = "\e[1m\e[1;37m\e[1;44m\n\n";
+    const RESET = "\n\e[0m\n";
 
-    ReplaceAppConfig($name);
+    public static function write(array $lines)
+    {
+        echo static::COLOR;
+        foreach ($lines as $line) {
+            echo ' ' . $line . PHP_EOL;
+        }
+        echo static::RESET;
+    }
+}
 
-    ReplaceAppKernel($name);
+class Installation
+{
+    const SKILLA_BASE_DEVELOPMENT_BUNDLE = 'Skilla\\BaseDevelopmentBundle';
 
-    ReplaceConfiguration($name);
+    public function execute($params)
+    {
+        if (!$this->checkNumberArguments($params)) {
+            return 1;
+        }
 
-    ReplaceExtension($name);
+        $name = $params[1];
 
-    RenameExtension($name);
+        if (!$this->checkBundleName($name)) {
+            return 2;
+        }
 
-    ReplaceBundle($name);
+        $this->replaceAppConfig($name);
 
-    RenameBundle($name);
+        $this->replaceAppKernel($name);
 
-    ReplaceComposer($name);
+        $this->replaceConfiguration($name);
 
-    UpdateComposer() || die(3);
+        $this->replaceExtension($name);
 
-    DeleteOriginalRepository();
+        $this->renameExtension($name);
 
-    Remember();
+        $this->replaceBundle($name);
 
-    function CheckNumberArguments($params) {
-        if (count($params)===2) {
+        $this->renameBundle($name);
+
+        $this->replaceComposer($name);
+
+        if (!$this->updateComposer()) {
+            return 3;
+        }
+
+        $this->deleteOriginalRepository();
+
+        $this->remember();
+
+        return true;
+    }
+
+    private function checkNumberArguments($params)
+    {
+        if (count($params) === 2) {
             return true;
         }
-        echo "use:\n";
-        echo "  " . $params[0] . " MyVendor/NewNameBundle\n";
+        Screen::write(array(
+            "use:",
+            "  " . $params[0] . " MyVendor/NewNameBundle"
+        ));
         return false;
     }
 
-    function CheckBundleName($name) {
+    private function checkBundleName($name)
+    {
         $pattern = '~^[A-Z][a-zA-Z]+/[A-Z][a-zA-Z]+Bundle$~';
         if (preg_match($pattern, $name) === 1) {
             return true;
         }
-        echo "Bad name '$name'\n";
-        echo "  examples:\n";
-        echo "    FOS/UserBundle\n";
-        echo "    Symfony/FrameworkBundle\n";
-        echo "    Skilla/BaseDevelopmentBundle\n";
+        Screen::write(array(
+            "Bad name '$name'",
+            "  examples:",
+            "    FOS/UserBundle",
+            "    Symfony/FrameworkBundle",
+            "    Skilla/BaseDevelopmentBundle",
+        ));
         return false;
     }
 
-    function ReplaceAppConfig($name) {
+    private function replaceAppConfig($name)
+    {
         $filename = 'app/config/config.yml';
-        $replace = str_replace(array('/', '_bundle'), array('_', ''), underscore($name));
+        $replace = str_replace(array('/', '_bundle'), array('_', ''), $this->underscore($name));
         $content = str_replace(
             'skilla_base_development',
             $replace,
@@ -61,7 +101,8 @@
         file_put_contents($filename, $content);
     }
 
-    function ReplaceAppKernel($name) {
+    private function replaceAppKernel($name)
+    {
         $filename = 'app/AppKernel.php';
         $nameParts = explode('/', $name);
         $vendor = $nameParts[0];
@@ -76,81 +117,124 @@
         file_put_contents($filename, $content);
     }
 
-    function ReplaceConfiguration($name) {
+    private function replaceConfiguration($name)
+    {
         $filename = 'Bundle/DependencyInjection/Configuration.php';
-        $replace = str_replace(array('/', '_bundle'), array('_', ''), underscore($name));
+        $replace = str_replace(array('/', '_bundle'), array('_', ''), $this->underscore($name));
         $content = str_replace(
-            array('Skilla\\BaseDevelopmentBundle', 'skilla_base_development'),
-            array(backslash($name), $replace),
+            array(static::SKILLA_BASE_DEVELOPMENT_BUNDLE, 'skilla_base_development'),
+            array($this->backslash($name), $replace),
             file_get_contents($filename)
         );
         file_put_contents($filename, $content);
     }
 
-    function ReplaceExtension($name) {
+    private function replaceExtension($name)
+    {
         $filename = 'Bundle/DependencyInjection/SkillaBaseDevelopmentExtension.php';
         $replace = str_replace(array('/', 'Bundle'), array('', ''), $name) . 'Extension';
         $content = str_replace(
-            array('Skilla\\BaseDevelopmentBundle', 'SkillaBaseDevelopmentExtension'),
-            array(backslash($name), $replace),
+            array(
+                static::SKILLA_BASE_DEVELOPMENT_BUNDLE,
+                'SkillaBaseDevelopmentExtension'
+            ),
+            array(
+                $this->backslash($name),
+                $replace
+            ),
             file_get_contents($filename)
         );
         file_put_contents($filename, $content);
     }
 
-    function RenameExtension($name) {
+    private function renameExtension($name)
+    {
         $oldFilename = __DIR__ . '/Bundle/DependencyInjection/SkillaBaseDevelopmentExtension.php';
-        $newFilename = __DIR__ . '/Bundle/DependencyInjection/' . str_replace(array('/', 'Bundle'), array('', ''), $name) . 'Extension.php';
+        $newFilename = __DIR__ . '/Bundle/DependencyInjection/' .
+            str_replace(
+                array('/', 'Bundle'),
+                array('', ''),
+                $name
+            ) .
+            'Extension.php';
         rename($oldFilename, $newFilename);
     }
 
-    function ReplaceBundle($name) {
+    private function replaceBundle($name)
+    {
         $filename = 'Bundle/SkillaBaseDevelopmentBundle.php';
         $replace = str_replace('/', '', $name);
         $content = str_replace(
-            array('Skilla\\BaseDevelopmentBundle', 'SkillaBaseDevelopmentBundle'),
-            array(backslash($name), $replace),
+            array(static::SKILLA_BASE_DEVELOPMENT_BUNDLE, 'SkillaBaseDevelopmentBundle'),
+            array($this->backslash($name), $replace),
             file_get_contents($filename)
         );
         file_put_contents($filename, $content);
     }
 
-    function ReplaceComposer($name) {
+    private function replaceComposer($name)
+    {
         $filename = 'composer.json';
         $content = str_replace(
             'skilla/base-development-bundle',
-            dash($name),
+            $this->dash($name),
             file_get_contents($filename)
         );
         file_put_contents($filename, $content);
     }
 
-    function RenameBundle($name) {
+    private function renameBundle($name)
+    {
         $oldFilename = __DIR__ . '/Bundle/SkillaBaseDevelopmentBundle.php';
         $newFilename = __DIR__ . '/Bundle/' . str_replace('/', '', $name) . '.php';
         rename($oldFilename, $newFilename);
     }
 
-    function underscore($name) {
-        return strtolower(preg_replace(array('/([A-Z]+)([A-Z][a-z])/', '/([a-z\d])([A-Z])/'), array('\\1_\\2', '\\1_\\2'), str_replace('_', '.', $name)));
+    private function underscore($name)
+    {
+        return strtolower(
+            preg_replace(
+                array(
+                    '/([A-Z]+)([A-Z][a-z])/',
+                    '/([a-z\d])([A-Z])/'
+                ),
+                array(
+                    '\\1_\\2', '\\1_\\2'
+                ),
+                str_replace('_', '.', $name)
+            )
+        );
     }
 
-    function dash($name) {
-        return strtolower(preg_replace(array('/([A-Z]+)([A-Z][a-z])/', '/([a-z\d])([A-Z])/'), array('\\1-\\2', '\\1-\\2'), str_replace('-', '.', $name)));
+    private function dash($name)
+    {
+        return strtolower(
+            preg_replace(
+                array(
+                    '/([A-Z]+)([A-Z][a-z])/',
+                    '/([a-z\d])([A-Z])/'
+                ),
+                array(
+                    '\\1-\\2', '\\1-\\2'
+                ),
+                str_replace('-', '.', $name)
+            )
+        );
     }
 
-    function backslash($name) {
+    private function backslash($name)
+    {
         return str_replace('/', '\\', $name);
     }
 
-    function UpdateComposer() {
-        $color = "\e[1m\e[1;37m\e[1;44m\n\n";
-        $reset = "\n\e[0m\n";
+    private function updateComposer()
+    {
         $composerNames = array('composer', 'composer.phar', './composer', './composer.phar');
         $output = '';
         $return = 0;
+        $composerName = '';
         foreach ($composerNames as $composerName) {
-            exec('which '.$composerName, $output, $return);
+            exec('which ' . $composerName, $output, $return);
             if ($return === 0) {
                 break;
             }
@@ -160,45 +244,45 @@
             return false;
         }
 
-        echo "$color Removing vendors ...$reset";
+        Screen::write(array("Removing vendors ..."));
         exec('rm -rf vendor/*');
-        echo "$color Removing composer.lock ...$reset";
+        Screen::write(array("Removing composer.lock ..."));
         exec('rm -rf composer.lock');
-        echo "$color Installing vendors ...$reset";
+        Screen::write(array("Installing vendors ..."));
         exec($composerName . ' install 1>&2', $output, $return);
-        echo "$color Executing app/console ...$reset";
+        Screen::write(array("Executing app/console ..."));
         exec('app/console 1>&2');
         return true;
     }
 
-    function DeleteOriginalRepository() {
-        if (!is_dir('.git')) {
-            return false;
-        }
-        if (!is_readable('.git/config')) {
+    private function deleteOriginalRepository()
+    {
+        if (!is_dir('.git') || !is_readable('.git/config')) {
             return false;
         }
         $content = file_get_contents('.git/config');
         if (preg_match('~https://github.com/skilla/BaseDevelopmentBundle.git~', $content) < 1) {
             return false;
         }
-        delTree('.git');
+        $this->delTree('.git');
+        return true;
     }
 
-    function Remember() {
-        $color = "\e[1m\e[1;37m\e[1;44m\n\n";
-        $reset = "\n\e[0m\n";
-        echo $color;
-        echo " Remember change author name and email in composer.json\n";
-        echo "\n";
-        echo " Goog luck with the bundle\n";
-        echo $reset;
+    private function remember()
+    {
+        Screen::write(array(
+            "remember change author name and email in composer.json",
+            "",
+            "Good luck with the bundle",
+        ));
     }
 
-    function delTree($dirname) {
-        $files = array_diff(scandir($dirname), array('.','..'));
+    private function delTree($directoryName)
+    {
+        $files = array_diff(scandir($directoryName), array('.', '..'));
         foreach ($files as $file) {
-            (is_dir("$dirname/$file")) ? delTree("$dirname/$file") : unlink("$dirname/$file");
+            (is_dir("$directoryName/$file")) ? $this->delTree("$directoryName/$file") : unlink("$directoryName/$file");
         }
-        return rmdir($dirname);
+        return rmdir($directoryName);
     }
+}
