@@ -203,7 +203,7 @@ class Installation
     {
         try {
             Screen::writeInitStatus(array('Replacing DependencyInjection/Extension values'));
-            $filename = 'Bundle/DependencyInjection/SkillaBaseDevelopmentExtension.php';
+            $filename = 'src/Bundle/DependencyInjection/SkillaBaseDevelopmentExtension.php';
             $replace = str_replace(array('/', 'Bundle'), array('', ''), $name) . 'Extension';
             $content = str_replace(
                 array(
@@ -229,8 +229,8 @@ class Installation
     {
         try {
             Screen::writeInitStatus(array('Renaming DependencyInjection/Extension'));
-            $oldFilename = __DIR__ . '/Bundle/DependencyInjection/SkillaBaseDevelopmentExtension.php';
-            $newFilename = __DIR__ . '/Bundle/DependencyInjection/' .
+            $oldFilename = __DIR__ . '/src/Bundle/DependencyInjection/SkillaBaseDevelopmentExtension.php';
+            $newFilename = __DIR__ . '/src/Bundle/DependencyInjection/' .
                 str_replace(
                     array('/', 'Bundle'),
                     array('', ''),
@@ -250,7 +250,7 @@ class Installation
     {
         try {
             Screen::writeInitStatus(array('Replacing Bundle values'));
-            $filename = 'Bundle/SkillaBaseDevelopmentBundle.php';
+            $filename = 'src/Bundle/SkillaBaseDevelopmentBundle.php';
             $replace = str_replace('/', '', $name);
             $content = str_replace(
                 array(static::SKILLA_BASE_DEVELOPMENT_BUNDLE, 'SkillaBaseDevelopmentBundle'),
@@ -299,8 +299,8 @@ class Installation
     {
         try {
             Screen::writeInitStatus(array('Renaming bundle'));
-            $oldFilename = __DIR__ . '/Bundle/SkillaBaseDevelopmentBundle.php';
-            $newFilename = __DIR__ . '/Bundle/' . str_replace('/', '', $name) . '.php';
+            $oldFilename = __DIR__ . '/src/Bundle/SkillaBaseDevelopmentBundle.php';
+            $newFilename = __DIR__ . '/src/Bundle/' . str_replace('/', '', $name) . '.php';
             rename($oldFilename, $newFilename);
             Screen::writeEndStatus(self::OK);
             return true;
