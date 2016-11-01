@@ -183,7 +183,7 @@ class Installation
     {
         try {
             Screen::writeInitStatus(array('Replacing DependencyInjection/Configuration values'));
-            $filename = 'Bundle/DependencyInjection/Configuration.php';
+            $filename = 'src/Bundle/DependencyInjection/Configuration.php';
             $replace = str_replace(array('/', '_bundle'), array('_', ''), $this->underscore($name));
             $content = str_replace(
                 array(static::SKILLA_BASE_DEVELOPMENT_BUNDLE, 'skilla_base_development'),
