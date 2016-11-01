@@ -249,7 +249,7 @@ class Installation
             array(
                 str_replace(array('/', 'Bundle'), array('', 'Extension'), $name),
                 $this->backslash($name),
-                $this->underscore(str_replace('Bundle', '', $name))
+                $this->underscore(str_replace(array('/', 'Bundle'), array('', ''), $name))
             )
         );
 
