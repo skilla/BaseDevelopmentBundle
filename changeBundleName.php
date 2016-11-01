@@ -247,7 +247,7 @@ class Installation
             ),
             array(
                 str_replace(array('/', 'Bundle'), array('', 'Extension'), $name),
-                preg_quote($this->backslash($name))
+                $this->backslash($name)
             )
         );
 
