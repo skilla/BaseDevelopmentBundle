@@ -57,6 +57,10 @@ class Installation
 {
     const SKILLA_BASE_DEVELOPMENT_BUNDLE = 'Skilla\\BaseDevelopmentBundle';
 
+    const OK = 'OK';
+
+    const ERROR = 'ERROR';
+
     public function execute($params)
     {
         if (!$this->checkNumberArguments($params)) {
@@ -91,6 +95,8 @@ class Installation
 
         $this->deleteOriginalRepository();
 
+        $this->generateNewComposer();
+
         $this->remember();
 
         return true;
@@ -100,10 +106,10 @@ class Installation
     {
         Screen::writeInitStatus(array('Checking number of arguments'));
         if (count($params) === 2) {
-            Screen::writeEndStatus('OK');
+            Screen::writeEndStatus(self::OK);
             return true;
         }
-        Screen::writeEndStatus('ERROR');
+        Screen::writeEndStatus(self::ERROR);
         Screen::writeLN(array(
             "use:",
             "  " . $params[0] . " MyVendor/NewNameBundle"
@@ -116,7 +122,7 @@ class Installation
         Screen::writeInitStatus(array('Checking bundle name'));
         $pattern = '~^[A-Z][a-zA-Z]+/[A-Z][a-zA-Z]+Bundle$~';
         if (preg_match($pattern, $name) === 1) {
-            Screen::writeEndStatus('OK');
+            Screen::writeEndStatus(self::OK);
             return true;
         }
         Screen::writeLN(array(
@@ -141,10 +147,10 @@ class Installation
                 file_get_contents($filename)
             );
             file_put_contents($filename, $content);
-            Screen::writeEndStatus('OK');
+            Screen::writeEndStatus(self::OK);
             return true;
         } catch (\Exception $e) {
-            Screen::writeEndStatus('ERROR');
+            Screen::writeEndStatus(self::ERROR);
         }
         return false;
     }
@@ -165,10 +171,10 @@ class Installation
                 file_get_contents($filename)
             );
             file_put_contents($filename, $content);
-            Screen::writeEndStatus('OK');
+            Screen::writeEndStatus(self::OK);
             return true;
         } catch (\Exception $e) {
-            Screen::writeEndStatus('ERROR');
+            Screen::writeEndStatus(self::ERROR);
         }
         return false;
     }
@@ -185,10 +191,10 @@ class Installation
                 file_get_contents($filename)
             );
             file_put_contents($filename, $content);
-            Screen::writeEndStatus('OK');
+            Screen::writeEndStatus(self::OK);
             return true;
         } catch (\Exception $e) {
-            Screen::writeEndStatus('ERROR');
+            Screen::writeEndStatus(self::ERROR);
         }
         return false;
     }
@@ -211,10 +217,10 @@ class Installation
                 file_get_contents($filename)
             );
             file_put_contents($filename, $content);
-            Screen::writeEndStatus('OK');
+            Screen::writeEndStatus(self::OK);
             return true;
         } catch (\Exception $e) {
-            Screen::writeEndStatus('ERROR');
+            Screen::writeEndStatus(self::ERROR);
         }
         return false;
     }
@@ -232,10 +238,10 @@ class Installation
                 ) .
                 'Extension.php';
             rename($oldFilename, $newFilename);
-            Screen::writeEndStatus('OK');
+            Screen::writeEndStatus(self::OK);
             return true;
         } catch (\Exception $e) {
-            Screen::writeEndStatus('ERROR');
+            Screen::writeEndStatus(self::ERROR);
         }
         return false;
     }
@@ -252,10 +258,10 @@ class Installation
                 file_get_contents($filename)
             );
             file_put_contents($filename, $content);
-            Screen::writeEndStatus('OK');
+            Screen::writeEndStatus(self::OK);
             return true;
         } catch (\Exception $e) {
-            Screen::writeEndStatus('ERROR');
+            Screen::writeEndStatus(self::ERROR);
         }
         return false;
     }
@@ -275,11 +281,16 @@ class Installation
                 preg_quote($this->backslash($name)),
                 $content
             );
+            $content = str_replace(
+                'src/',
+                '',
+                $content
+            );
             file_put_contents($filename, $content);
-            Screen::writeEndStatus('OK');
+            Screen::writeEndStatus(self::OK);
             return true;
         } catch (\Exception $e) {
-            Screen::writeEndStatus('ERROR');
+            Screen::writeEndStatus(self::ERROR);
         }
         return false;
     }
@@ -291,10 +302,10 @@ class Installation
             $oldFilename = __DIR__ . '/Bundle/SkillaBaseDevelopmentBundle.php';
             $newFilename = __DIR__ . '/Bundle/' . str_replace('/', '', $name) . '.php';
             rename($oldFilename, $newFilename);
-            Screen::writeEndStatus('OK');
+            Screen::writeEndStatus(self::OK);
             return true;
         } catch (\Exception $e) {
-            Screen::writeEndStatus('ERROR');
+            Screen::writeEndStatus(self::ERROR);
         }
         return false;
     }
@@ -319,18 +330,18 @@ class Installation
         try {
             Screen::writeInitStatus('Removing vendors');
             exec('rm -rf vendor/*');
-            Screen::writeEndStatus('OK');
+            Screen::writeEndStatus(self::OK);
             Screen::writeInitStatus('Removing composer.lock');
             exec('rm -rf composer.lock');
-            Screen::writeEndStatus('OK');
+            Screen::writeEndStatus(self::OK);
             Screen::writeInitStatus('Installing vendors');
             exec($composerName . ' install 1>&2', $output, $return);
-            Screen::writeEndStatus('OK');
+            Screen::writeEndStatus(self::OK);
             Screen::writeLN(array('Executing app/console'));
             exec('app/console 1>&2');
             return true;
         } catch (\Exception $e) {
-            Screen::writeEndStatus('ERROR');
+            Screen::writeEndStatus(self::ERROR);
         }
     }
 
@@ -348,11 +359,34 @@ class Installation
         }
         try {
             $this->delTree('.git');
-            Screen::writeEndStatus('OK');
+            Screen::writeEndStatus(self::OK);
             return true;
         } catch (\Exception $e) {
-            Screen::writeEndStatus('ERROR');
+            Screen::writeEndStatus(self::ERROR);
         }
+    }
+
+    private function generateNewComposer()
+    {
+        $jsonContent = file_get_contents('composer.json');
+        $phpContent = json_decode($jsonContent, true);
+        unset($phpContent['extra']);
+        unset($phpContent['config']);
+        unset($phpContent['scripts']);
+        unset($phpContent['require-dev']);
+        unset($phpContent['autoload']['classmap']);
+        $phpContent['description'] = '';
+        $phpContent['keywords'] = array('');
+        $phpContent['authors'][0]['name'] = '';
+        $phpContent['authors'][0]['email'] = '';
+        $jsonContent = json_encode($phpContent, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        $jsonContent = str_replace(
+            'src/',
+            '',
+            $jsonContent
+        );
+
+        file_put_contents(__DIR__ . '/src/composer.json', $jsonContent);
     }
 
     private function remember()

@@ -16,21 +16,21 @@
 >
     <php>
         <ini name="error_reporting" value="-1" />
-    <!--    <server name="KERNEL_DIR" value="/var/www/EixComercial/PersistCacheBundle/app/" /> -->
+        <server name="KERNEL_DIR" value="../app/" />
     </php>
 
     <testsuites>
         <testsuite name="BaseDevelopmentBundle">
-            <directory>../Bundle</directory>
+            <directory>./Bundle</directory>
         </testsuite>
     </testsuites>
 
     <filter>
         <whitelist>
-            <directory>../Bundle/</directory>
+            <directory>./Bundle/</directory>
             <exclude>
-                <directory>../Bundle/Tests</directory>
-                <directory>../Bundle/Resources</directory>
+                <directory>./Bundle/Tests</directory>
+                <directory>./Bundle/Resources</directory>
             </exclude>
         </whitelist>
     </filter>

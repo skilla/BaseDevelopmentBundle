@@ -19,7 +19,7 @@ class SkillaBaseDevelopmentExtensionTest extends KernelTestCase
 {
     public function testInstantiation()
     {
-        $expected = 'Skilla\\BaseDevelopmentBundle\\DependencyInjection\\SkillaBaseDevelopmentExtension';
+        $expected = 'Symfony\\Component\\HttpKernel\\DependencyInjection\\Extension';
         $actual = new SkillaBaseDevelopmentExtension();
         $this->assertInstanceOf($expected, $actual);
     }

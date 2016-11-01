@@ -15,6 +15,7 @@ class AppKernel extends Kernel
     {
         return array(
             new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
+            new \Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             new \Skilla\BaseDevelopmentBundle\SkillaBaseDevelopmentBundle(),
         );
     }

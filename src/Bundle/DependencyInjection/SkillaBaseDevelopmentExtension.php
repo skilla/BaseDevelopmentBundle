@@ -21,7 +21,7 @@ class SkillaBaseDevelopmentExtension extends Extension
      */
     public function load(array $configs, ContainerBuilder $container)
     {
-        $configDir = realpath(__DIR__ . '/../Resources/config') . '/';
+        $configDir = __DIR__ . '/../Resources/config';
         $configFile = 'config.yml';
 
         $loader = new YamlFileLoader($container, new FileLocator($configDir));
