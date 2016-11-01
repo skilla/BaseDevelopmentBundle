@@ -25,7 +25,7 @@ class Screen
 
     public static function writeEndStatus($line)
     {
-        static::writeLines((array)$line, '', PHP_EOL);
+        static::writeLines((array)$line, '', '');
         static::endWrite();
     }
 
@@ -73,25 +73,13 @@ class Installation
             return 2;
         }
 
-        $this->replaceAppConfig($name);
+        $this->replaceInFiles($this->listOfReplacements($name));
 
-        $this->replaceAppKernel($name);
-
-        $this->replaceConfiguration($name);
-
-        $this->replaceExtension($name);
-
-        $this->replaceController($name);
-
-        $this->replaceControllerTest($name);
+        $this->listOfReplacement($name);
 
         $this->renameExtension($name);
 
-        $this->replaceBundle($name);
-
         $this->renameBundle($name);
-
-        $this->replaceComposer($name);
 
         if (!$this->updateComposer()) {
             return 3;
@@ -139,132 +127,133 @@ class Installation
         return false;
     }
 
-    private function replaceAppConfig($name)
+    private function replaceInFiles($replacements)
     {
-        Screen::writeInitStatus(array('Replacing app config values'));
-        try {
-            $filename = 'app/config/config.yml';
-            $replace = str_replace(array('/', '_bundle'), array('_', ''), $this->underscore($name));
-            $content = str_replace(
-                'skilla_base_development',
-                $replace,
-                file_get_contents($filename)
-            );
-            file_put_contents($filename, $content);
-            Screen::writeEndStatus(self::OK);
-            return true;
-        } catch (\Exception $e) {
-            Screen::writeEndStatus(self::ERROR);
+        foreach ($replacements as $filename => $data) {
+            Screen::writeInitStatus(array($data[0]));
+            try {
+                $fileContent = file_get_contents($filename);
+                $fileContent = str_replace($data[1], $data[2], $fileContent);
+                Screen::writeEndStatus(static::OK);
+                file_put_contents($filename, $fileContent);
+            } catch (\Exception $e) {
+                Screen::writeEndStatus(static::ERROR);
+            }
         }
-        return false;
     }
 
-    private function replaceAppKernel($name)
+    private function listOfReplacements($name)
     {
-        try {
-            Screen::writeInitStatus(array('Replacing appKernel values'));
-            $filename = 'app/AppKernel.php';
-            $nameParts = explode('/', $name);
-            $vendor = $nameParts[0];
-            $bundle = $nameParts[1];
+        $result = array();
+        $result['app/config/config.yml'] = array(
+            'Replacing app config values',
+            array('skilla_base_development'),
+            array(str_replace(array('/', '_bundle'), array('_', ''), $this->underscore($name)))
+        );
 
-            $replace = $vendor . '\\' . $bundle . '\\' . $vendor . $bundle;
-            $content = str_replace(
-                'Skilla\BaseDevelopmentBundle\SkillaBaseDevelopmentBundle',
-                $replace,
-                file_get_contents($filename)
-            );
-            file_put_contents($filename, $content);
-            Screen::writeEndStatus(self::OK);
-            return true;
-        } catch (\Exception $e) {
-            Screen::writeEndStatus(self::ERROR);
-        }
-        return false;
-    }
+        $nameParts = explode('/', $name);
+        $bundle = $nameParts[1];
+        $result['app/config/routing.yml'] = array(
+            'Replacing Routing values',
+            array(
+                'base_development_bundle',
+                'SkillaBaseDevelopmentBundle'
+            ),
+            array(
+                $this->underscore($bundle),
+                str_replace('/', '', $name)
+            )
+        );
 
-    private function replaceConfiguration($name)
-    {
-        try {
-            Screen::writeInitStatus(array('Replacing DependencyInjection/Configuration values'));
-            $filename = 'src/Bundle/DependencyInjection/Configuration.php';
-            $replace = str_replace(array('/', '_bundle'), array('_', ''), $this->underscore($name));
-            $content = str_replace(
-                array(static::SKILLA_BASE_DEVELOPMENT_BUNDLE, 'skilla_base_development'),
-                array($this->backslash($name), $replace),
-                file_get_contents($filename)
-            );
-            file_put_contents($filename, $content);
-            Screen::writeEndStatus(self::OK);
-            return true;
-        } catch (\Exception $e) {
-            Screen::writeEndStatus(self::ERROR);
-        }
-        return false;
-    }
+        $nameParts = explode('/', $name);
+        $vendor = $nameParts[0];
+        $bundle = $nameParts[1];
+        $replace = $vendor . '\\' . $bundle . '\\' . $vendor . $bundle;
+        $result['app/AppKernel.php'] = array(
+            'Replacing appKernel values',
+            array('Skilla\BaseDevelopmentBundle\SkillaBaseDevelopmentBundle'),
+            array($replace)
+        );
 
-    private function replaceExtension($name)
-    {
-        try {
-            Screen::writeInitStatus(array('Replacing DependencyInjection/Extension values'));
-            $filename = 'src/Bundle/DependencyInjection/SkillaBaseDevelopmentExtension.php';
-            $replace = str_replace(array('/', 'Bundle'), array('', ''), $name) . 'Extension';
-            $content = str_replace(
-                array(
-                    static::SKILLA_BASE_DEVELOPMENT_BUNDLE,
-                    'SkillaBaseDevelopmentExtension'
-                ),
-                array(
-                    $this->backslash($name),
-                    $replace
-                ),
-                file_get_contents($filename)
-            );
-            file_put_contents($filename, $content);
-            Screen::writeEndStatus(self::OK);
-            return true;
-        } catch (\Exception $e) {
-            Screen::writeEndStatus(self::ERROR);
-        }
-        return false;
-    }
-
-    private function replaceController($name)
-    {
-        try {
-            Screen::writeInitStatus(array('Replacing DefaultController values'));
-            $filename = 'src/Bundle/Controller/DefaultController.php';
-            $content = str_replace(
+        $result['src/Bundle/DependencyInjection/Configuration.php'] = array(
+            'Replacing DependencyInjection/Configuration values',
+            array(
                 static::SKILLA_BASE_DEVELOPMENT_BUNDLE,
+            ),
+            array(
                 $this->backslash($name),
-                file_get_contents($filename)
-            );
-            file_put_contents($filename, $content);
-            Screen::writeEndStatus(self::OK);
-            return true;
-        } catch (\Exception $e) {
-            Screen::writeEndStatus(self::ERROR);
-        }
-        return false;
-    }
+            )
+        );
 
-    private function replaceControllerTest($name)
-    {
-        try {
-            Screen::writeInitStatus(array('Replacing DefaultController values'));
-            $filename = 'src/Bundle/Tests/Controller/DefaultControllerTest.php';
-            $content = str_replace(
+        $result['src/Bundle/DependencyInjection/SkillaBaseDevelopmentExtension.php'] = array(
+            'Replacing DependencyInjection/Extension values',
+            array(
                 static::SKILLA_BASE_DEVELOPMENT_BUNDLE,
+                'SkillaBaseDevelopmentExtension'
+            ),
+            array(
                 $this->backslash($name),
-                file_get_contents($filename)
-            );
-            file_put_contents($filename, $content);
-            Screen::writeEndStatus(self::OK);
-            return true;
-        } catch (\Exception $e) {
-            Screen::writeEndStatus(self::ERROR);
-        }
-        return false;
+                str_replace(array('/', 'Bundle'), array('', ''), $name) . 'Extension'
+            )
+        );
+
+        $result['src/Bundle/SkillaBaseDevelopmentBundle.php'] = array(
+            'Replacing Bundle values',
+            array(
+                static::SKILLA_BASE_DEVELOPMENT_BUNDLE,
+                'SkillaBaseDevelopmentBundle'
+            ),
+            array(
+                $this->backslash($name),
+                str_replace('/', '', $name)
+            )
+        );
+
+        $result['src/Bundle/Controller/DefaultController.php'] = array(
+            'Replacing DefaultController values',
+            array(
+                static::SKILLA_BASE_DEVELOPMENT_BUNDLE,
+            ),
+            array(
+                $this->backslash($name),
+            )
+        );
+
+        $result['src/Bundle/Tests/Controller/DefaultControllerTest.php'] = array(
+            'Replacing DefaultController values',
+            array(
+                static::SKILLA_BASE_DEVELOPMENT_BUNDLE,
+            ),
+            array(
+                $this->backslash($name),
+            )
+        );
+
+        $result['src/Bundle/SkillaBaseDevelopmentBundle.php'] = array(
+            'Replacing Bundle values',
+            array(
+                static::SKILLA_BASE_DEVELOPMENT_BUNDLE,
+                'SkillaBaseDevelopmentBundle'
+            ),
+            array(
+                $this->backslash($name),
+                str_replace('/', '', $name)
+            )
+        );
+
+        $result['composer.json'] = array(
+            'Replacing composer values',
+            array(
+                'skilla/base-development-bundle',
+                'Skilla\\\\BaseDevelopmentBundle'
+            ),
+            array(
+                $this->dash($name),
+                preg_quote($this->backslash($name))
+            )
+        );
+
+        return $result;
     }
 
     private function renameExtension($name)
@@ -280,55 +269,6 @@ class Installation
                 ) .
                 'Extension.php';
             rename($oldFilename, $newFilename);
-            Screen::writeEndStatus(self::OK);
-            return true;
-        } catch (\Exception $e) {
-            Screen::writeEndStatus(self::ERROR);
-        }
-        return false;
-    }
-
-    private function replaceBundle($name)
-    {
-        try {
-            Screen::writeInitStatus(array('Replacing Bundle values'));
-            $filename = 'src/Bundle/SkillaBaseDevelopmentBundle.php';
-            $replace = str_replace('/', '', $name);
-            $content = str_replace(
-                array(static::SKILLA_BASE_DEVELOPMENT_BUNDLE, 'SkillaBaseDevelopmentBundle'),
-                array($this->backslash($name), $replace),
-                file_get_contents($filename)
-            );
-            file_put_contents($filename, $content);
-            Screen::writeEndStatus(self::OK);
-            return true;
-        } catch (\Exception $e) {
-            Screen::writeEndStatus(self::ERROR);
-        }
-        return false;
-    }
-
-    private function replaceComposer($name)
-    {
-        try {
-            Screen::writeInitStatus(array('Replacing composer values'));
-            $filename = 'composer.json';
-            $content = str_replace(
-                'skilla/base-development-bundle',
-                $this->dash($name),
-                file_get_contents($filename)
-            );
-            $content = str_replace(
-                'Skilla\\\\BaseDevelopmentBundle',
-                preg_quote($this->backslash($name)),
-                $content
-            );
-            $content = str_replace(
-                'src/',
-                '',
-                $content
-            );
-            file_put_contents($filename, $content);
             Screen::writeEndStatus(self::OK);
             return true;
         } catch (\Exception $e) {

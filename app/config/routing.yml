@@ -1,0 +1,3 @@
+base_development_bundle:
+    resource: "@SkillaBaseDevelopmentBundle/Controller"
+    type:     annotation
