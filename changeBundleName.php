@@ -239,7 +239,7 @@ class Installation
             )
         );
 
-        $result['src/Bundle/Tests/Controller/DependencyInjection/SkillaBaseDevelopmentExtensionTest.php'] = array(
+        $result['src/Bundle/Tests/DependencyInjection/SkillaBaseDevelopmentExtensionTest.php'] = array(
             'Replacing SkillaBaseDevelopmentExtensionTest values',
             array(
                 'SkillaBaseDevelopmentExtension',
