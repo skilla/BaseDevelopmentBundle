@@ -243,11 +243,13 @@ class Installation
             'Replacing SkillaBaseDevelopmentExtensionTest values',
             array(
                 'SkillaBaseDevelopmentExtension',
-                'Skilla\\BaseDevelopmentBundle'
+                'Skilla\\BaseDevelopmentBundle',
+                'skilla_base_development'
             ),
             array(
                 str_replace(array('/', 'Bundle'), array('', 'Extension'), $name),
-                $this->backslash($name)
+                $this->backslash($name),
+                $this->underscore(str_replace('Bundle', '', $name))
             )
         );
 
