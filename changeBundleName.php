@@ -81,6 +81,10 @@ class Installation
 
         $this->replaceExtension($name);
 
+        $this->replaceController($name);
+
+        $this->replaceControllerTest($name);
+
         $this->renameExtension($name);
 
         $this->replaceBundle($name);
@@ -214,6 +218,44 @@ class Installation
                     $this->backslash($name),
                     $replace
                 ),
+                file_get_contents($filename)
+            );
+            file_put_contents($filename, $content);
+            Screen::writeEndStatus(self::OK);
+            return true;
+        } catch (\Exception $e) {
+            Screen::writeEndStatus(self::ERROR);
+        }
+        return false;
+    }
+
+    private function replaceController($name)
+    {
+        try {
+            Screen::writeInitStatus(array('Replacing DefaultController values'));
+            $filename = 'src/Bundle/Controller/DefaultController.php';
+            $content = str_replace(
+                static::SKILLA_BASE_DEVELOPMENT_BUNDLE,
+                $this->backslash($name),
+                file_get_contents($filename)
+            );
+            file_put_contents($filename, $content);
+            Screen::writeEndStatus(self::OK);
+            return true;
+        } catch (\Exception $e) {
+            Screen::writeEndStatus(self::ERROR);
+        }
+        return false;
+    }
+
+    private function replaceControllerTest($name)
+    {
+        try {
+            Screen::writeInitStatus(array('Replacing DefaultController values'));
+            $filename = 'src/Bundle/Tests/Controller/DefaultControllerTest.php';
+            $content = str_replace(
+                static::SKILLA_BASE_DEVELOPMENT_BUNDLE,
+                $this->backslash($name),
                 file_get_contents($filename)
             );
             file_put_contents($filename, $content);

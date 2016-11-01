@@ -8,8 +8,8 @@
 
 namespace Skilla\BaseDevelopmentBundle\Tests\Controller;
 
-use Skilla\BaseDevelopmentBundle\Controller\DefaultController;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use \Skilla\BaseDevelopmentBundle\Controller\DefaultController;
+use \Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class DefaultControllerTest extends KernelTestCase
 {
