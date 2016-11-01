@@ -8,14 +8,14 @@
 
 namespace Skilla\BaseDevelopmentBundle\Tests;
 
-use Skilla\BaseDevelopmentBundle\SkillaBaseDevelopmentBundle;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use \Skilla\BaseDevelopmentBundle\SkillaBaseDevelopmentBundle;
+use \Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class SkillaBaseDevelopmentBundleTest extends KernelTestCase
 {
     public function testInstantiation()
     {
-        $expected = 'Skilla\\BaseDevelopmentBundle\\SkillaBaseDevelopmentBundle';
+        $expected = 'Symfony\\Component\\HttpKernel\\Bundle\\Bundle';
         $actual = new SkillaBaseDevelopmentBundle();
         $this->assertInstanceOf($expected, $actual);
     }

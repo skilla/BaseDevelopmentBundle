@@ -75,8 +75,6 @@ class Installation
 
         $this->replaceInFiles($this->listOfReplacements($name));
 
-        $this->listOfReplacement($name);
-
         $this->renameExtension($name);
 
         $this->renameBundle($name);
@@ -219,13 +217,37 @@ class Installation
             )
         );
 
-        $result['src/Bundle/Tests/Controller/DefaultControllerTest.php'] = array(
+        $result['src/Bundle/Tests/SkillaBaseDevelopmentBundleTest.php'] = array(
             'Replacing DefaultController values',
+            array(
+                static::SKILLA_BASE_DEVELOPMENT_BUNDLE,
+                'SkillaBaseDevelopmentBundle'
+            ),
+            array(
+                $this->backslash($name),
+                str_replace('/', '', $name)
+            )
+        );
+
+        $result['src/Bundle/Tests/Controller/DefaultControllerTest.php'] = array(
+            'Replacing DefaultControllerTes values',
             array(
                 static::SKILLA_BASE_DEVELOPMENT_BUNDLE,
             ),
             array(
                 $this->backslash($name),
+            )
+        );
+
+        $result['src/Bundle/Tests/Controller/DependencyInjection/SkillaBaseDevelopmentExtensionTest.php'] = array(
+            'Replacing SkillaBaseDevelopmentExtensionTest values',
+            array(
+                'SkillaBaseDevelopmentExtension',
+                'Skilla\\BaseDevelopmentBundle'
+            ),
+            array(
+                str_replace(array('/', 'Bundle'), array('', 'Extension'), $name),
+                preg_quote($this->backslash($name))
             )
         );
 

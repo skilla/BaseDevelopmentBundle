@@ -8,10 +8,8 @@
 
 namespace Skilla\BaseDevelopmentBundle\Tests\DependencyInjection;
 
-
 use \Skilla\BaseDevelopmentBundle\DependencyInjection\SkillaBaseDevelopmentExtension;
-use Skilla\BaseDevelopmentBundle\SkillaBaseDevelopmentBundle;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use \Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use \Symfony\Component\DependencyInjection\ContainerBuilder;
 use \Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 
@@ -42,10 +40,7 @@ class SkillaBaseDevelopmentExtensionTest extends KernelTestCase
      */
     public function testLoadWhitNoBundleParameter()
     {
-        $parameters = array(
-            'kernel.root_dir' => realpath(__DIR__.'/app/'),
-            'kernel.debug' => false,
-        );
+        $parameters = $this->getBasicParameters();
         $parameterBag = new ParameterBag($parameters);
         $containerBuilder = new ContainerBuilder($parameterBag);
         $sut = new SkillaBaseDevelopmentExtension();
@@ -59,10 +54,7 @@ class SkillaBaseDevelopmentExtensionTest extends KernelTestCase
      */
     public function testLoadWithInvalidParameter()
     {
-        $parameters = array(
-            'kernel.root_dir' => realpath(__DIR__.'/app/'),
-            'kernel.debug' => false,
-        );
+        $parameters = $this->getBasicParameters();
         $parameterBag = new ParameterBag($parameters);
         $containerBuilder = new ContainerBuilder($parameterBag);
         $sut = new SkillaBaseDevelopmentExtension();
@@ -77,7 +69,7 @@ class SkillaBaseDevelopmentExtensionTest extends KernelTestCase
 
     public function testLoad()
     {
-        self::bootKernel();
+        static::bootKernel();
 
         $parameters = array(
             'kernel.root_dir' => static::$kernel->getRootDir(),
@@ -95,5 +87,16 @@ class SkillaBaseDevelopmentExtensionTest extends KernelTestCase
         $sut->load($configs, $containerBuilder);
         $this->assertEquals('skilla_base_development', $sut->getAlias());
         parent::tearDown();
+    }
+
+    /**
+     * @return array
+     */
+    private function getBasicParameters()
+    {
+        return array(
+            'kernel.root_dir' => realpath(__DIR__ . '/app/'),
+            'kernel.debug' => false,
+        );
     }
 }
