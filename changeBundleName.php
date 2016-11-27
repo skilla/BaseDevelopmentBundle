@@ -173,6 +173,16 @@ class Installation
             array($replace)
         );
 
+        $result['src/phpunit.xml'] = array(
+            'Replacing phpunit.xml values',
+            array(
+                'SkillaBaseDevelopmentBundle',
+            ),
+            array(
+                str_replace('/', '', $name),
+            ),
+        );
+
         $result['src/Bundle/DependencyInjection/Configuration.php'] = array(
             'Replacing DependencyInjection/Configuration values',
             array(
