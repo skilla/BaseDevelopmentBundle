@@ -20,7 +20,7 @@
     </php>
 
     <testsuites>
-        <testsuite name="BaseDevelopmentBundle">
+        <testsuite name="SkillaBaseDevelopmentBundle">
             <directory>./Bundle</directory>
         </testsuite>
     </testsuites>
