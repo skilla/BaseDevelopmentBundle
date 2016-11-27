@@ -373,7 +373,7 @@ class Installation
             return false;
         }
         $content = file_get_contents('.git/config');
-        if (preg_match('~github.com\/skilla\/BaseDevelopmentBundle.git~', $content) < 1) {
+        if (preg_match('~https:\/\/github\.com\/skilla\/BaseDevelopmentBundle~', $content) < 1) {
             Screen::writeEndStatus('ERROR original repository not exists');
             return false;
         }
