@@ -187,9 +187,11 @@ class Installation
             'Replacing DependencyInjection/Configuration values',
             array(
                 static::SKILLA_BASE_DEVELOPMENT_BUNDLE,
+                'skilla_base_development'
             ),
             array(
                 $this->backslash($name),
+                str_replace(array('/', '_bundle'), array('_', ''), $this->underscore($name))
             )
         );
 
@@ -350,6 +352,8 @@ class Installation
             Screen::writeInitStatus('Removing composer.lock');
             exec('rm -rf composer.lock');
             Screen::writeEndStatus(self::OK);
+            Screen::writeInitStatus('Clearing composer cache');
+            exec($composerName . ' clearcache 1>&2', $output, $return);
             Screen::writeInitStatus('Installing vendors');
             exec($composerName . ' install 1>&2', $output, $return);
             Screen::writeEndStatus(self::OK);
@@ -369,8 +373,8 @@ class Installation
             return false;
         }
         $content = file_get_contents('.git/config');
-        if (preg_match('~https://github.com/skilla/BaseDevelopmentBundle.git~', $content) < 1) {
-            Screen::writeEndStatus('ERROR original repositori not exists');
+        if (preg_match('~github.com\/skilla\/BaseDevelopmentBundle.git~', $content) < 1) {
+            Screen::writeEndStatus('ERROR original repository not exists');
             return false;
         }
         try {
