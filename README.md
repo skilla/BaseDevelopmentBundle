@@ -10,6 +10,7 @@ __Skeleton bundle for the development and testing of new bundles for Symfony__
 [![Latest Unstable Version](https://poser.pugx.org/skilla/base-development-bundle/v/unstable)](https://packagist.org/packages/skilla/base-development-bundle#dev-master)
 [![License](https://poser.pugx.org/skilla/base-development-bundle/license)](https://packagist.org/packages/skilla/base-development-bundle)
 [![composer.lock](https://poser.pugx.org/skilla/base-development-bundle/composerlock)](https://packagist.org/packages/skilla/base-development-bundle)
+[![codecov](https://codecov.io/gh/skilla/BaseDevelopmentBundle/branch/master/graph/badge.svg)](https://codecov.io/gh/skilla/BaseDevelopmentBundle)
 
 [__English__]
 
